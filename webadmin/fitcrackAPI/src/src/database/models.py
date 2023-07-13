@@ -215,7 +215,7 @@ class FcJob(Base):
     comment = Column(Text(collation='utf8_bin'), nullable=False)
     time_start = Column(DateTime)
     time_end = Column(DateTime)
-    seconds_per_workunit = Column(BigInteger, nullable=False, server_default=text("'3600'"))
+    seconds_per_workunit = Column(BigInteger, nullable=False, server_default=text("'600'"))
     charset1 = Column(String(4096, 'utf8_bin'))
     charset2 = Column(String(4096, 'utf8_bin'))
     charset3 = Column(String(4096, 'utf8_bin'))
@@ -510,7 +510,7 @@ class FcSetting(Base):
     __tablename__ = 'fc_settings'
 
     id = Column(Integer, primary_key=True)
-    default_seconds_per_workunit = Column(Integer, nullable=False, server_default=text("'3600'"))
+    default_seconds_per_workunit = Column(Integer, nullable=False, server_default=text("'600'"))
     workunit_timeout_factor = Column(Integer, nullable=False, server_default=text("'2'"))
     hwmon_temp_abort = Column(Integer, nullable=False, server_default=text("'90'"))
     bench_all = Column(Integer, nullable=False, server_default=text("'1'"))

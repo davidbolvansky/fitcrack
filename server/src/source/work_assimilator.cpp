@@ -575,6 +575,11 @@ int assimilate_handler(WORKUNIT& wu, vector<RESULT>& /*results*/, RESULT& canoni
 
                 std::snprintf(buf, SQL_BUF_SIZE, "SELECT speed FROM `%s` WHERE workunit_id = %" PRIu64 " LIMIT 1;", mysql_table_workunit.c_str(), wu.id);
                 uint64_t workunit_speed = get_num_from_mysql(buf);
+                if (workunit_speed == 0) {
+                    std::cerr << __LINE__ << " - ERROR: Failed to read status code." << std::endl;
+                    plan_new_benchmark(host_id);
+                    break;
+                }
 
                 // TODO: power is in hashes per second, and rules multiply the keyspace
                 // Handle it in generator?
@@ -819,9 +824,11 @@ int assimilate_handler(WORKUNIT& wu, vector<RESULT>& /*results*/, RESULT& canoni
                     std::snprintf(buf, SQL_BUF_SIZE, "SELECT speed FROM `%s` WHERE workunit_id = %" PRIu64 " LIMIT 1;", mysql_table_workunit.c_str(), wu.id);
                     uint64_t workunit_speed = get_num_from_mysql(buf);
 
-                    // Update host power
-                    std::snprintf(buf, SQL_BUF_SIZE, "UPDATE `%s` SET power = %" PRIu64 ", time = now() WHERE id = %" PRIu64 " LIMIT 1;", mysql_table_host.c_str(), workunit_speed, host_id);
-                    update_mysql(buf);
+                    if (workunit_speed > 0) {
+                        // Update host power
+                        std::snprintf(buf, SQL_BUF_SIZE, "UPDATE `%s` SET power = %" PRIu64 ", time = now() WHERE id = %" PRIu64 " LIMIT 1;", mysql_table_host.c_str(), workunit_speed, host_id);
+                        update_mysql(buf);
+                    }
                 }
             }
 
@@ -838,9 +845,11 @@ int assimilate_handler(WORKUNIT& wu, vector<RESULT>& /*results*/, RESULT& canoni
                 std::snprintf(buf, SQL_BUF_SIZE, "SELECT speed FROM `%s` WHERE workunit_id = %" PRIu64 " LIMIT 1;", mysql_table_workunit.c_str(), wu.id);
                 uint64_t workunit_speed = get_num_from_mysql(buf);
 
-                // Update host power
-                std::snprintf(buf, SQL_BUF_SIZE, "UPDATE `%s` SET power = %" PRIu64 ", time = now() WHERE id = %" PRIu64 " LIMIT 1;", mysql_table_host.c_str(), workunit_speed, host_id);
-                update_mysql(buf);
+                if (workunit_speed > 0) {
+                    // Update host power
+                    std::snprintf(buf, SQL_BUF_SIZE, "UPDATE `%s` SET power = %" PRIu64 ", time = now() WHERE id = %" PRIu64 " LIMIT 1;", mysql_table_host.c_str(), workunit_speed, host_id);
+                    update_mysql(buf);
+                }
             }
 
             /** Host error */
